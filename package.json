@@ -1,0 +1,36 @@
+{
+  "name": "spellcast",
+  "version": "0.1.0",
+  "description": "Computer vision app to turn cellphone camera video into handwriting, and your phone into a wand Edit",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "dependencies": {
+    "chai": "^4.0.1",
+    "express": "^4.15.3",
+    "opencv": "git://github.com/peterbraden/node-opencv.git"
+  },
+  "devDependencies": {
+    "mocha": "^3.4.2"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rtzm/spellcast.git"
+  },
+  "keywords": [
+    "computer",
+    "vision",
+    "video"
+  ],
+  "author": "rtzm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rtzm/spellcast/issues"
+  },
+  "homepage": "https://github.com/rtzm/spellcast#readme"
+}
