@@ -1,6 +1,8 @@
 const cv = require('opencv');
 const path = require('path');
 
+// relies heavily on the optical flow example from node-opencv: https://github.com/peterbraden/node-opencv/blob/master/examples/optical-flow.js
+
 // TODO: currently hardcoded video, grab video from user in future
 const cap = new cv.VideoCapture(path.join(__dirname, 'lib', 'test_videos', 'letter_w_small.m4v'));
 
