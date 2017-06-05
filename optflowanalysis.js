@@ -2,7 +2,7 @@ const cv = require('opencv');
 const path = require('path');
 
 // TODO: currently hardcoded video, grab video from user in future
-const cap = new cv.VideoCapture(path.join(__dirname, 'lib', 'test_videos', 'letter_z_small.m4v'));
+const cap = new cv.VideoCapture(path.join(__dirname, 'lib', 'test_videos', 'letter_w_small.m4v'));
 
 // Parameters for lucas kanade optical flow
 const lk_params = {
