@@ -9,14 +9,15 @@
   },
   "dependencies": {
     "chai": "^4.0.1",
-    "express": "^4.15.3",
-    "opencv": "git://github.com/peterbraden/node-opencv.git"
+    "express": "^4.15.3"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "mocha": "^3.4.2"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --require babel-polyfill --require babel-register"
   },
   "repository": {
     "type": "git",
