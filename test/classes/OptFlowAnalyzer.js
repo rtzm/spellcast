@@ -13,7 +13,7 @@ describe('OptFlowAnalyzer', function() {
   });
 
   describe('#init()', function() {
-  	it('should set default value for point count', function() {
+  	xit('should set default value for point count', function() {
     	let mockVideo = { test: "value" };
       let analyzer = new OptFlowAnalyzer(mockVideo);
       analyzer.init();
@@ -54,18 +54,21 @@ describe('OptFlowAnalyzer', function() {
       analyzer.init();
 
       // Parse first mock frame
-      let mockFrame1 = new MockImageData();
-      mockFrame1.setData();
-      analyzer.parseNext(mockFrame1);
+      let current = new MockImageData(64, 48);
+      current.setData();
+      analyzer.parseNext(current);
 
-      // Parse second mock frame
-      let mockFrame2 = mockFrame1.makeShiftedImage("left");
-      console.log(mockFrame2.data);
-      analyzer.parseNext(mockFrame2);
+      let initialXY = analyzer.prev_xy;
+
+      // make a bunch of new frames and shift to the right
+      for (let i = 0; i < 120; i++) {
+        let nextFrame = current.makeShiftedImage("right");
+        analyzer.parseNext(nextFrame);
+      }
 
       chai.assert.equal(
-        analyzer.prev_xy, 
-        0
+        analyzer.curr_xy, 
+        initialXY
       );
   	});
   });
