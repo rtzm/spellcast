@@ -17,6 +17,8 @@ export default function MockImageData(width = 8, height = 6) {
 MockImageData.prototype.setData = function(data = null) {
 	
 	// no data given, make random data
+	// TODO: check that this isn't creating too much noise and causing false
+	// negatives for our test, make it slightly less randomized
 	if (!data) {
 		data = this.data.map(this.randomColor);
 	}
