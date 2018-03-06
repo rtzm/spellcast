@@ -3,11 +3,15 @@ import OptFlowAnalyzer from '../../lib/classes/OptFlowAnalyzer';
 import MockImageData from '../testData/MockImageData';
 import {uint1String, uint2String} from '../testData/uints';
 
+let mockWriter = function() {
+  this.writer = function(input) { return input; };
+};
+
 describe('OptFlowAnalyzer', function() {
   describe('#getVideo()', function() {
     it('should return the video passed in', function() {
     	let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter);
       chai.assert.equal(mockVideo, analyzer.getVideo());
     });
   });
@@ -15,8 +19,7 @@ describe('OptFlowAnalyzer', function() {
   describe('#init()', function() {
   	it('should set default value for point count', function() {
     	let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
       chai.assert.equal(analyzer.point_count, 1);      
   	});
   });
@@ -26,8 +29,7 @@ describe('OptFlowAnalyzer', function() {
     // TODO: why do points get dropped if this is too many new frames?
     it('should not drop points', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
 
       // Parse first mock frame
       let current = new MockImageData(64, 48);
@@ -47,8 +49,7 @@ describe('OptFlowAnalyzer', function() {
 
     it('should return correctly shifted coordinates for corner on an image shifted left', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
 
       // Parse first mock frame
       let current = new MockImageData(64, 48);
@@ -84,8 +85,7 @@ describe('OptFlowAnalyzer', function() {
 
     it('should return correctly shifted coordinates for corner on an image shifted right', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
 
       // Parse first mock frame
       let current = new MockImageData(64, 48);
@@ -121,8 +121,7 @@ describe('OptFlowAnalyzer', function() {
 
     it('should return correctly shifted coordinates for corner on an image shifted up', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
 
       // Parse first mock frame
       let current = new MockImageData(64, 48);
@@ -157,8 +156,7 @@ describe('OptFlowAnalyzer', function() {
 
     it('should return correctly shifted coordinates for corner on an image shifted down', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
       let indexOfFirstX = (analyzer.point_count<<1)-2;
       let indexOfFirstY = (analyzer.point_count<<1)-1;
 
@@ -195,8 +193,7 @@ describe('OptFlowAnalyzer', function() {
   describe('#getAverageVector()', function() {
     it('should return give negative X vector on right-shifted frames', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
       let indexOfFirstX = (analyzer.point_count<<1)-2;
       let indexOfFirstY = (analyzer.point_count<<1)-1;
 
@@ -209,9 +206,7 @@ describe('OptFlowAnalyzer', function() {
 
       // make a new frame and shift
       let nextFrame = current.makeShiftedImage("right");
-      analyzer.parseNext(nextFrame);
-
-      let avg = analyzer.getAverageVector();
+      let avg = analyzer.parseNext(nextFrame).getAverageVector();
 
       chai.assert.isBelow(avg[0], 0, "x vector should be negative");
       chai.assert.equal(Math.round(avg[1]), 0, "y vector should be zero");
@@ -219,8 +214,7 @@ describe('OptFlowAnalyzer', function() {
 
     it('should return give positive X vector on left-shifted frames', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
       let indexOfFirstX = (analyzer.point_count<<1)-2;
       let indexOfFirstY = (analyzer.point_count<<1)-1;
 
@@ -233,9 +227,7 @@ describe('OptFlowAnalyzer', function() {
 
       // make a new frame and shift
       let nextFrame = current.makeShiftedImage("left");
-      analyzer.parseNext(nextFrame);
-
-      let avg = analyzer.getAverageVector();
+      let avg = analyzer.parseNext(nextFrame).getAverageVector();
 
       chai.assert.isAbove(avg[0], 0, "x vector should be positive");
       chai.assert.equal(Math.round(avg[1]), 0, "y vector should be zero");
@@ -243,8 +235,7 @@ describe('OptFlowAnalyzer', function() {
 
     it('should return give positive Y vector on up-shifted frames', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
       let indexOfFirstX = (analyzer.point_count<<1)-2;
       let indexOfFirstY = (analyzer.point_count<<1)-1;
 
@@ -257,9 +248,7 @@ describe('OptFlowAnalyzer', function() {
 
       // make a new frame and shift
       let nextFrame = current.makeShiftedImage("up");
-      analyzer.parseNext(nextFrame);
-
-      let avg = analyzer.getAverageVector();
+      let avg = analyzer.parseNext(nextFrame).getAverageVector();
 
       chai.assert.equal(Math.round(avg[0]), 0, "x vector should be zero");
       chai.assert.isAbove(avg[1], 0, "y vector should be positive");
@@ -267,8 +256,7 @@ describe('OptFlowAnalyzer', function() {
 
     it('should return give negative Y vector on down-shifted frames', function() {
       let mockVideo = { test: "value" };
-      let analyzer = new OptFlowAnalyzer(mockVideo);
-      analyzer.init();
+      let analyzer = new OptFlowAnalyzer(mockVideo, mockWriter).init();
       let indexOfFirstX = (analyzer.point_count<<1)-2;
       let indexOfFirstY = (analyzer.point_count<<1)-1;
 
@@ -281,9 +269,7 @@ describe('OptFlowAnalyzer', function() {
 
       // make a new frame and shift
       let nextFrame = current.makeShiftedImage("down");
-      analyzer.parseNext(nextFrame);
-
-      let avg = analyzer.getAverageVector();
+      let avg = analyzer.parseNext(nextFrame).getAverageVector();
 
       chai.assert.equal(Math.round(avg[0]), 0, "x vector should be zero");
       chai.assert.isBelow(avg[1], 0, "y vector should be negative");
