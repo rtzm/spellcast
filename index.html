@@ -1,8 +1,16 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Optical Flow test</title>
+  <title>Spellcast</title>
+  <script type="text/javascript" src="lib/controller.js"></script>
 </head>
-<body>
-  <img src="images/current.jpg">
+<body onload="controller.load()">
+	<div>
+		<video id="video" src="lib/test_videos/letter_v_small.m4v" controls="true"/>
+	</div>
+	<div>
+		<canvas id="input" width="640" height="480"></canvas>
+		<canvas id="output" width="640" height="480"></canvas>
+	</div>
 </body>
 </html>
