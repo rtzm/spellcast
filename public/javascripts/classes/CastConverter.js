@@ -5,7 +5,7 @@
  * @param {OptFlowAnalyzer}						analyzer
  * @param {GlyphWriter}								writer
  */
-export default function CastConverter(analyzer, writer) {
+export default function CastConverter(analyzer, writer, reader) {
 	/**
 	 * Optical flow analyzer that will provide composite data for 
 	 * the video
@@ -20,12 +20,13 @@ export default function CastConverter(analyzer, writer) {
 	 */
 	this.writer = writer;
 };
+
 /**
  * Converts the image into vectors and passes them to the writer
  * 
  * @param  {ImageData} imageData from input context for video
  */
-CastConverter.prototype.convert = function(imageData) {
+CastConverter.prototype.convertFrame = function(imageData) {
 	this.analyzer.parse(imageData);
 	this.writer.write(this.analyzer.getAverageVector());
 };

@@ -1,6 +1,3 @@
-// TODO: add this back when loading dynamically within this file
-// import JsFeat from 'jsfeat';
-
 export default function OptFlowAnalyzer() {
 	/**
 	 * From jsfeat:
