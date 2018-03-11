@@ -10,3 +10,12 @@ a {
 #input {
 	display: none;
 }
+
+#video {
+	/* 
+	Set the video to not display once we're certain it 
+	can be read in consistently
+	
+	display: none; 
+	*/
+}
