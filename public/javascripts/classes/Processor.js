@@ -2,19 +2,11 @@ import CastConverter from './CastConverter.js';
 import OptFlowAnalyzer from './OptFlowAnalyzer.js';
 import GlyphWriter from './GlyphWriter.js';
 
-export default function Processor(video, input, output) {
+export default function Processor(video, input, converter) {
 	this.video = video;
-
 	this.ctxInput = input.getContext('2d', { alpha: false });
-	this.output = output;
-	this.converter = new CastConverter(
-		new OptFlowAnalyzer().init(), 
-		new GlyphWriter(output)
-	);
+	this.converter = converter;
 	this.requestId;
-	this.video.addEventListener('playing', this.process.bind(this), false);
-	this.video.addEventListener('ended', this.stop.bind(this), false);
-	this.video.addEventListener('pause', this.stop.bind(this), false);
 };
 
 Processor.prototype.process = function() {
@@ -31,8 +23,6 @@ Processor.prototype.stop = function() {
 document.body.onload = function(event) {
 	let video = document.getElementById('video');
 	this.video.addEventListener('loadeddata', () => {
-		console.log(video.videoHeight);
-		// TODO: build these canvases from the video's width and height
 		let input = document.createElement("canvas")
 		input.setAttribute("id", "input")
 		input.setAttribute("width", video.videoWidth)
@@ -43,6 +33,13 @@ document.body.onload = function(event) {
 		output.setAttribute("height", video.videoHeight);
 		let container = document.getElementById("output-container");
 		container.appendChild(output);
-		new Processor(video, input, output);
+		let converter = new CastConverter(
+			new OptFlowAnalyzer().init(), 
+			new GlyphWriter(output)
+		);
+		let processor = new Processor(video, input, converter);
+		video.addEventListener('playing', processor.process.bind(processor), false);
+		video.addEventListener('ended', processor.stop.bind(processor), false);
+		video.addEventListener('pause', processor.stop.bind(processor), false);
 	}, false);
 };
