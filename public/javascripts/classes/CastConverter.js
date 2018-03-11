@@ -27,6 +27,5 @@ export default function CastConverter(analyzer, writer) {
  */
 CastConverter.prototype.convert = function(imageData) {
 	this.analyzer.parse(imageData);
-	let vector = this.analyzer.getAverageVector();
-	this.writer.write(vector);
+	this.writer.write(this.analyzer.getAverageVector());
 };
