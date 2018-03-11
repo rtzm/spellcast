@@ -1,17 +1,31 @@
-export default function GlyphWriter(outputContext) {
-	this.outputContext = outputContext;
+export default function GlyphWriter(outputCanvas) {
+	this.outputCanvas = outputCanvas;
+	this.outputContext = outputCanvas.getContext('2d', { alpha: false });
+	this.outputContext.strokeStyle = "red";
+	this.totalWidth = outputCanvas.width;
+	this.totalHeight = outputCanvas.height;
 	this.currentPosition = [ 
-		Math.round(outputContext.width/2), 
-		Math.round(outputContext.height/2)
-	]
+		Math.round(outputCanvas.width/2), 
+		Math.round(outputCanvas.height/2)
+	];
 };
 
 /**
  * Write to the outputContext using the given vector
  *
- * @todo Make this actually do something
  * @param  {Array} vector an x and y vector
  */
 GlyphWriter.prototype.write = function(vector) {
-	console.log(vector);
-}
+	// Get current position and subtract vector 
+	// (since the vectors are inverted for the image)
+	let [startWidth, startHeight] = this.currentPosition;
+	let [deltaX, deltaY] = vector;
+	this.currentPosition[0] = startWidth - deltaX;
+	this.currentPosition[1] = startHeight - deltaY;
+
+	// Draw path
+	this.outputContext.beginPath();
+	this.outputContext.moveTo(startWidth, startHeight);
+	this.outputContext.lineTo(this.currentPosition[0], this.currentPosition[1]);
+	this.outputContext.stroke();
+};

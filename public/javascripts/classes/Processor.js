@@ -2,8 +2,18 @@ import CastConverter from './CastConverter.js';
 import OptFlowAnalyzer from './OptFlowAnalyzer.js';
 import GlyphWriter from './GlyphWriter.js';
 
-export default function Processor() {
+export default function Processor(video, input, output) {
+	this.video = video;
+	this.ctxInput = input.getContext('2d', { alpha: false });
+	this.output = output;
+	this.converter = new CastConverter(
+		new OptFlowAnalyzer().init(), 
+		new GlyphWriter(output)
+	);
 	this.requestId;
+	this.video.addEventListener('playing', this.process.bind(this), false);
+	this.video.addEventListener('ended', this.stop.bind(this), false);
+	this.video.addEventListener('pause', this.stop.bind(this), false);
 };
 
 Processor.prototype.process = function() {
@@ -17,25 +27,21 @@ Processor.prototype.stop = function() {
 	window.cancelAnimationFrame(this.requestId);
 }
 
-Processor.prototype.load = function() {
-	this.video = document.getElementById('video');
-
-	// TODO: build these canvases from the video's width and height
-	this.input = document.getElementById('input');
-	this.ctxInput = this.input.getContext('2d', { alpha: false });
-	this.output = document.getElementById('output');
-	this.ctxOutput = this.output.getContext('2d', { alpha: false });
-
-	this.converter = new CastConverter(
-		new OptFlowAnalyzer().init(), 
-		new GlyphWriter(this.ctxOutput)
-	);
-
-	this.video.addEventListener('playing', this.process.bind(this), false);
-	this.video.addEventListener('ended', this.stop.bind(this), false);
+document.body.onload = function(event) {
+	let video = document.getElementById('video');
+	this.video.addEventListener('loadeddata', () => {
+		console.log(video.videoHeight);
+		// TODO: build these canvases from the video's width and height
+		let input = document.createElement("canvas")
+		input.setAttribute("id", "input")
+		input.setAttribute("width", video.videoWidth)
+		input.setAttribute("height", video.videoHeight);
+		let output = document.createElement("canvas")
+		output.setAttribute("id", "output")
+		output.setAttribute("width", video.videoWidth)
+		output.setAttribute("height", video.videoHeight);
+		let container = document.getElementById("output-container");
+		container.appendChild(output);
+		new Processor(video, input, output);
+	}, false);
 };
-
-document.addEventListener("DOMContentLoaded", function(event) {
-	let processor = new Processor();
-	processor.load();
-});
