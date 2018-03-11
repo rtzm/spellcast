@@ -2,14 +2,15 @@
   "name": "spellcast",
   "version": "0.1.0",
   "description": "Computer vision app to turn cellphone camera video into handwriting, and your phone into a wand Edit",
-  "main": "index.js",
-  "directories": {
-    "example": "examples",
-    "test": "test"
-  },
   "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
     "chai": "^4.0.1",
-    "express": "^4.15.3"
+    "express": "^4.15.5",
+    "hbs": "~4.0.1",
+    "morgan": "~1.9.0",
+    "serve-favicon": "~2.4.5"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -18,6 +19,9 @@
   },
   "scripts": {
     "test": "mocha --require babel-polyfill --require babel-register"
+  },
+  "scripts": {
+    "start": "node ./bin/www"
   },
   "repository": {
     "type": "git",

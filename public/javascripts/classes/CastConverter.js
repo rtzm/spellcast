@@ -5,16 +5,7 @@
  * @param {OptFlowAnalyzer}						analyzer
  * @param {GlyphWriter}								writer
  */
-export default function CastConverter(videoContext, analyzer, writer) {
-	/**
-	 * Video context from the input canvas
-	 * TODO: figure out how this is going to be read in, and how it is
-	 * going to be turned into ImageData
-	 * 
-	 * @type {CanvasRenderingContext2D}
-	 */
-	this.videoContext = videoContext;
-
+export default function CastConverter(analyzer, writer) {
 	/**
 	 * Optical flow analyzer that will provide composite data for 
 	 * the video
@@ -29,11 +20,13 @@ export default function CastConverter(videoContext, analyzer, writer) {
 	 */
 	this.writer = writer;
 };
-
-CastConverter.prototype.loadVideo = function(video) {
-	this.video = video;
-};
-
+/**
+ * Converts the image into vectors and passes them to the writer
+ * 
+ * @param  {ImageData} imageData from input context for video
+ */
 CastConverter.prototype.convert = function(imageData) {
-	this.writer.write(this.analyzer.parse(imageData));
+	this.analyzer.parse(imageData);
+	let vector = this.analyzer.getAverageVector();
+	this.writer.write(vector);
 };

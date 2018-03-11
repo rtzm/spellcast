@@ -1,5 +1,5 @@
-// TODO: add this back when loading dynamically
-// import jsfeat from 'jsfeat';
+// TODO: add this back when loading dynamically within this file
+// import JsFeat from 'jsfeat';
 
 export default function OptFlowAnalyzer() {
 	/**
@@ -142,8 +142,7 @@ OptFlowAnalyzer.prototype.parse = function(imageData) {
   this.prev_img_pyr = this.curr_img_pyr;
   this.curr_img_pyr = _pyr;
 
-  // TODO: replace magic numbers for width and height with properties
-	jsfeat.imgproc.grayscale(imageData.data, 64, 48, this.curr_img_pyr.data[0]);
+	jsfeat.imgproc.grayscale(imageData.data, imageData.width, imageData.height, this.curr_img_pyr.data[0]);
 	this.curr_img_pyr.build(this.curr_img_pyr.data[0], true);
 
 	jsfeat.optical_flow_lk.track(
