@@ -3,14 +3,19 @@ import OptFlowAnalyzer from './OptFlowAnalyzer.js';
 import GlyphWriter from './GlyphWriter.js';
 
 export default function Processor() {
+	this.requestId;
 };
 
 Processor.prototype.process = function() {
-	window.requestAnimationFrame(this.process.bind(this));
+	this.requestId = window.requestAnimationFrame(this.process.bind(this));
 	this.ctxInput.drawImage(video, 0, 0, 64, 48);
 	let imageData = this.ctxInput.getImageData(0, 0, 64, 48);
 	this.converter.convert(imageData);
 };
+
+Processor.prototype.stop = function() {
+	window.cancelAnimationFrame(this.requestId);
+}
 
 Processor.prototype.load = function() {
 	this.video = document.getElementById('video');
@@ -27,6 +32,7 @@ Processor.prototype.load = function() {
 	);
 
 	this.video.addEventListener('playing', this.process.bind(this), false);
+	this.video.addEventListener('ended', this.stop.bind(this), false);
 };
 
 document.addEventListener("DOMContentLoaded", function(event) {
