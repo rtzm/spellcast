@@ -1,6 +1,11 @@
+/**
+ * Writes to canvas element using vectors read into it
+ * 
+ * @param {canvas} outputCanvas
+ */
 export default function GlyphWriter(outputCanvas) {
 	this.outputCanvas = outputCanvas;
-	this.outputContext = outputCanvas.getContext('2d', { alpha: false });
+	this.outputContext = outputCanvas.getContext('2d');
 	this.outputContext.strokeStyle = "red";
 	this.totalWidth = outputCanvas.width;
 	this.totalHeight = outputCanvas.height;
