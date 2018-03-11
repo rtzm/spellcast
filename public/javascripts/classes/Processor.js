@@ -4,6 +4,7 @@ import GlyphWriter from './GlyphWriter.js';
 
 export default function Processor(video, input, output) {
 	this.video = video;
+
 	this.ctxInput = input.getContext('2d', { alpha: false });
 	this.output = output;
 	this.converter = new CastConverter(
@@ -18,8 +19,8 @@ export default function Processor(video, input, output) {
 
 Processor.prototype.process = function() {
 	this.requestId = window.requestAnimationFrame(this.process.bind(this));
-	this.ctxInput.drawImage(video, 0, 0, 64, 48);
-	let imageData = this.ctxInput.getImageData(0, 0, 64, 48);
+	this.ctxInput.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+	let imageData = this.ctxInput.getImageData(0, 0, video.videoWidth, video.videoHeight);
 	this.converter.convert(imageData);
 };
 
