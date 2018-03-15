@@ -7,15 +7,11 @@ a {
 	color: #00B7FF;
 }
 
-#input {
-	display: none;
+#text-output {
+	font-size: 3em;
 }
 
-#video {
-	/* 
-	Set the video to not display once we're certain it 
-	can be read in consistently
-	
-	display: none; 
-	*/
+#video-control {
+	width: 100px;
+	height: 80px;
 }

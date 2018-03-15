@@ -46,7 +46,7 @@ export default function OptFlowAnalyzer() {
 	 * Min eigen value threshold for YAPE06 corner detection
 	 * 
 	 * @type {Number}
-	 */
+	 */	
 	this.min_eigen_value_threshold = 25;
 
 	/**
@@ -54,7 +54,7 @@ export default function OptFlowAnalyzer() {
 	 * 
 	 * @type {Number}
 	 */
-	this.min_score = 100;
+	this.min_score = 50;
 
 	/**
 	 * From jsfeat:
@@ -155,12 +155,12 @@ OptFlowAnalyzer.prototype.parse = function(imageData) {
 	jsfeat.yape06.min_eigen_value_threshold = this.min_eigen_value_threshold|0;
 	jsfeat.yape06.detect(matrix, corners);
 
-	// Filter by best corners and set as previous coordinates
-	corners.filter(corner => corner.score > this.min_score)
-		.sort((a, b) => {
+	// Sort by best corners and set as previous coordinates
+	corners = corners.sort((a, b) => {
 			// sort descending by score
 			return b.score - a.score;
 		});
+
 	let j = 0;
 	this.prev_xy.forEach((value, index, array) => {
 		if (index % 2 === 0) {
@@ -173,7 +173,6 @@ OptFlowAnalyzer.prototype.parse = function(imageData) {
 			}
 	});
 	this.point_count = j;
-
 	jsfeat.imgproc.grayscale(imageData.data, imageData.width, imageData.height, this.curr_img_pyr.data[0]);
 	this.curr_img_pyr.build(this.curr_img_pyr.data[0], true);
 
