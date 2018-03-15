@@ -34,11 +34,16 @@ export default function Spellcast() {
 	/**
 	 * Currently transcribing the drawn glyph into text
 	 * 
-	 * @todo Actually use this to manage state and disable 
-	 *       canvas/button while waiting for promise to return
 	 * @type {Boolean}
 	 */
 	this.transcribing = false;
+
+	/**
+	 * Transcribed text already on the page
+	 * 
+	 * @type {Boolean}
+	 */
+	this.transcribed = false;
 
 	/**
 	 * How much the video size should be reduced by
@@ -123,19 +128,28 @@ Spellcast.prototype.loadProcessorsAndListeners = function() {
 	this.video.addEventListener('playing', processor.start.bind(processor), false);
 	this.video.addEventListener('ended', processor.stop.bind(processor), false);
 	this.video.addEventListener('pause', processor.stop.bind(processor), false);
-	this.videoControl.addEventListener('click', this.toggleCapture.bind(this), false);
+	this.videoControl.addEventListener('click', this.toggleControl.bind(this), false);
 
 	// Bind transcription event when video pauses
 	this.video.addEventListener('pause', this.transcribeGlyph.bind(this), false);	
 };
 
-Spellcast.prototype.toggleCapture = function() {
-	if (this.capturing) {
+Spellcast.prototype.toggleControl = function() {
+	if (this.transcribed) {
+		window.location.reload();
+	} else if (this.capturing) {
 		this.video.pause();
+		this.capturing = !this.capturing;
+		this.videoControl.innerHTML = "Transcribing...";
 	} else {
-		this.video.play();
+		if (this.transcribing) {
+			// no-op
+		} else {
+			this.video.play();
+			this.capturing = !this.capturing;
+			this.videoControl.innerHTML = "Stop";
+		}
 	}
-	this.capturing = !this.capturing;
 }
 
 /**
@@ -167,6 +181,7 @@ Spellcast.prototype.generateVideoProcessor = function() {
  *       mobile, so this would drastically optimize performance.
  */
 Spellcast.prototype.transcribeGlyph = function() {
+	this.transcribing = true;
 	Tesseract.recognize(this.glyph)
 	.then((result) => {
 
@@ -176,6 +191,9 @@ Spellcast.prototype.transcribeGlyph = function() {
 		// Put it on the page
 		let text = document.createTextNode(firstSymbol);
 		this.textOutput.appendChild(text);
+		this.transcribing = false;
+		this.transcribed = true;
+		this.videoControl.innerHTML = "Reload page";
 	})
 	.catch(err => console.error(err));
 }
