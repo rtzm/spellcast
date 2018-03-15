@@ -26,12 +26,16 @@ export default function Spellcast() {
 
 	/**
 	 * Currently capturing video
+	 * 
 	 * @type {Boolean}
 	 */
 	this.capturing = false;
 
 	/**
 	 * Currently transcribing the drawn glyph into text
+	 * 
+	 * @todo Actually use this to manage state and disable 
+	 *       canvas/button while waiting for promise to return
 	 * @type {Boolean}
 	 */
 	this.transcribing = false;
