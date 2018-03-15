@@ -185,15 +185,21 @@ Spellcast.prototype.transcribeGlyph = function() {
 	Tesseract.recognize(this.glyph)
 	.then((result) => {
 
-		// TODO: improve how we're parsing the text. We might not want the "first" symbol in the image...
-		let firstSymbol = result.symbols[0].text;
+		if (result.symbols[0]) {
+
+			// TODO: improve how we're parsing the text. We might not want the "first" symbol in the image...
+			let firstSymbol = result.symbols[0].text;
+			
+			// Put it on the page
+			let text = document.createTextNode(firstSymbol);
+			this.textOutput.appendChild(text);
+			this.videoControl.innerHTML = "Reload page";	
+		} else {
+			this.videoControl.innerHTML = "Can't parse symbol, try again";
+		}
 		
-		// Put it on the page
-		let text = document.createTextNode(firstSymbol);
-		this.textOutput.appendChild(text);
 		this.transcribing = false;
 		this.transcribed = true;
-		this.videoControl.innerHTML = "Reload page";
 	})
 	.catch(err => console.error(err));
 }
