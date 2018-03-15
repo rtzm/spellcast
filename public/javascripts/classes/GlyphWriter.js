@@ -5,7 +5,7 @@
  */
 export default function GlyphWriter(outputCanvas) {
 	this.outputCanvas = outputCanvas;
-	this.outputContext = outputCanvas.getContext('2d');
+	this.outputContext = outputCanvas.getContext('2d', { alpha: "false" });
 	this.outputContext.strokeStyle = "red";
 	this.totalWidth = outputCanvas.width;
 	this.totalHeight = outputCanvas.height;
@@ -29,6 +29,9 @@ GlyphWriter.prototype.write = function(vector) {
 	this.currentPosition[1] = startHeight - deltaY;
 
 	// Draw path
+	// TODO: replace drawing with offscreen canvas for optimization
+	// See https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+	// Or possibly https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas
 	this.outputContext.beginPath();
 	this.outputContext.moveTo(startWidth, startHeight);
 	this.outputContext.lineTo(this.currentPosition[0], this.currentPosition[1]);
