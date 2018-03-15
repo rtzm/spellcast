@@ -13,6 +13,8 @@ a {
 
 #text-output {
 	font-size: 3em;
+	text-align: center;
+	margin: 10px auto;
 }
 
 #controls {
@@ -23,6 +25,11 @@ a {
 #video-control {
 	width: 180px;
 	height: 80px;
+}
+
+#glyph-container {
+	margin: 0 auto;
+    width: 500px;
 }
 
 #glyph {
