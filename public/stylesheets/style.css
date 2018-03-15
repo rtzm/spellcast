@@ -35,6 +35,11 @@ a {
 
 #about {
 	width: 500px;
+    margin: 0 auto;
+}
+
+#about div {
+	margin: 13px auto;
 }
 
 #glyph {
