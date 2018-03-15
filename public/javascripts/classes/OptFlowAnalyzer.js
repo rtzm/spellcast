@@ -46,15 +46,8 @@ export default function OptFlowAnalyzer() {
 	 * Min eigen value threshold for YAPE06 corner detection
 	 * 
 	 * @type {Number}
-	 */	
-	this.min_eigen_value_threshold = 25;
-
-	/**
-	 * Minimum score for YAPE06 corner detection
-	 * 
-	 * @type {Number}
 	 */
-	this.min_score = 50;
+	this.min_eigen_value_threshold = 25;
 
 	/**
 	 * From jsfeat:
@@ -155,12 +148,12 @@ OptFlowAnalyzer.prototype.parse = function(imageData) {
 	jsfeat.yape06.min_eigen_value_threshold = this.min_eigen_value_threshold|0;
 	jsfeat.yape06.detect(matrix, corners);
 
-	// Sort by best corners and set as previous coordinates
+	// Sort corners descending by score
 	corners = corners.sort((a, b) => {
-			// sort descending by score
-			return b.score - a.score;
-		});
+		return b.score - a.score;
+	});
 
+	// Set top corners to previous coordinates
 	let j = 0;
 	this.prev_xy.forEach((value, index, array) => {
 		if (index % 2 === 0) {
@@ -173,9 +166,14 @@ OptFlowAnalyzer.prototype.parse = function(imageData) {
 			}
 	});
 	this.point_count = j;
+
+	// Make image grayscale for easier processing
 	jsfeat.imgproc.grayscale(imageData.data, imageData.width, imageData.height, this.curr_img_pyr.data[0]);
 	this.curr_img_pyr.build(this.curr_img_pyr.data[0], true);
 
+	// TODO: This algorithm takes longer than anything else on the page. 
+	// Attempt to optimize it by shifting the window size, max iterations, 
+	// epsilon and min eigen values.
 	jsfeat.optical_flow_lk.track(
 		this.prev_img_pyr, 
 		this.curr_img_pyr, 

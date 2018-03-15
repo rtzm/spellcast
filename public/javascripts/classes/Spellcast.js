@@ -1,15 +1,17 @@
 import CastConverter from './CastConverter.js';
 import OptFlowAnalyzer from './OptFlowAnalyzer.js';
 import GlyphWriter from './GlyphWriter.js';
-import GlyphReader from './GlyphReader.js';
 import Processor from './Processor.js';
 
 export default function Spellcast() {
 	/**
-	 * The video element that will be sourced with getUserMedia's MediaStream
+	 * The video element that will be sourced with getUserMedia's MediaStream.
+	 * Set playsinline to true so that iOS doesn't make it go full screen on play.
+	 * Also mute it, just in case.
 	 */
 	this.video = document.createElement('video');
 	this.video.setAttribute("playsinline", true);
+	this.video.setAttribute("muted", true);
 
 	/**
 	 * The text output div element that will hold the final OCR'ed symbol
@@ -22,7 +24,17 @@ export default function Spellcast() {
 	 */
 	this.glyph;
 
+	/**
+	 * Currently capturing video
+	 * @type {Boolean}
+	 */
 	this.capturing = false;
+
+	/**
+	 * Currently transcribing the drawn glyph into text
+	 * @type {Boolean}
+	 */
+	this.transcribing = false;
 
 	/**
 	 * How much the video size should be reduced by
@@ -132,11 +144,9 @@ Spellcast.prototype.generateVideoProcessor = function() {
 		new OptFlowAnalyzer().init(), 
 		new GlyphWriter(this.glyph)
 	);
-	let reader = new GlyphReader(this.glyph);
 	return new Processor(
 		this.video, 
 		converter, 
-		reader, 
 		Math.floor(this.video.videoWidth)/this.downsampleRate, 
 		Math.floor(this.video.videoHeight)/this.downsampleRate
 	);
@@ -149,12 +159,18 @@ Spellcast.prototype.generateVideoProcessor = function() {
  * @todo right now this is dependent on the external Tesseract service,
  *       but should look into creating a custom client-side service running
  *       locally to optimize processing and possibly create a custom
- *       dictionary of symbols
+ *       dictionary of symbols. The network request alone takes a long time on 
+ *       mobile, so this would drastically optimize performance.
  */
 Spellcast.prototype.transcribeGlyph = function() {
 	Tesseract.recognize(this.glyph)
 	.then((result) => {
-		let text = document.createTextNode(result.symbols[0].text);
+
+		// TODO: improve how we're parsing the text. We might not want the "first" symbol in the image...
+		let firstSymbol = result.symbols[0].text;
+		
+		// Put it on the page
+		let text = document.createTextNode(firstSymbol);
 		this.textOutput.appendChild(text);
 	})
 	.catch(err => console.error(err));

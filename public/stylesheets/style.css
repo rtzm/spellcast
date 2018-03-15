@@ -3,6 +3,10 @@ body {
 	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+h1 {
+	margin: 0 auto;
+}
+
 a {
 	color: #00B7FF;
 }
@@ -11,7 +15,19 @@ a {
 	font-size: 3em;
 }
 
+#controls {
+	margin: 0 auto;
+	width: 200px;
+}
+
 #video-control {
-	width: 100px;
+	width: 180px;
 	height: 80px;
+}
+
+#glyph {
+	border: solid gray 1px;
+	margin: 0 auto;
+	width: 480px;
+	height: 320px;
 }
