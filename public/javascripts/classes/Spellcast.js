@@ -85,6 +85,7 @@ Spellcast.prototype.boot = function() {
 		.catch(this.handleGetUserMediaError.bind(this));
 	} else {
 		// TODO: Why is chrome on my iPhone 5 unable to display? 
+		alert(navigator.webkitGetUserMedia);
 		if (navigator.webkitGetUserMedia) {
 			// adapter.js sometimes reads chrome on iOS as safari, and can't shim
 			navigator.webkitGetUserMedia(
