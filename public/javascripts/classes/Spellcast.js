@@ -80,14 +80,14 @@ Spellcast.prototype.boot = function() {
 
 	// TODO: add handling for making this work on all mobile browsers
 	if (navigator.mediaDevices) {
-		alert("navigator.mediaDevices exists");
-		let promise = navigator.mediaDevices.getUserMedia(this.mediaConstraints)
+		navigator.mediaDevices.getUserMedia(this.mediaConstraints)
 		.then(this.handleStream.bind(this)) 
 		.catch(this.handleGetUserMediaError.bind(this));
-		alert(promise);
 	} else {
-		// fallback for browsers
+		// fallback for chrome on iOS
+		// TODO: add fallback behavior for google chrome on iOS?
 		alert("navigator.mediaDevices does not exist");
+		alert(navigator.getUserMedia)
 		let promise = navigator.getUserMedia(
 			this.mediaConstraints,
 			this.handleStream.bind(this), 
@@ -103,6 +103,7 @@ Spellcast.prototype.boot = function() {
  * @param  {Error} error
  */
 Spellcast.prototype.handleGetUserMediaError = function(error) {
+	alert("received error");
 	let warning = document.createTextNode("Unable to run with your browser/camera.");
 	this.textOutput.appendChild(warning);
 	console.error(error);
@@ -114,21 +115,17 @@ Spellcast.prototype.handleGetUserMediaError = function(error) {
  * @param  {MediaStream} stream
  */
 Spellcast.prototype.handleStream = function(stream) {
-	alert("hanlding stream");
 	// Make sure all audio tracks disabled
 	let audioTracks = stream.getAudioTracks();
 	audioTracks.forEach(track => track.enabled = false);
-	alert("setting video source");
 	this.video.srcObject = stream;
 	this.video.onloadedmetadata = this.loadProcessorAndListeners.bind(this);
-	alert("video source is " + this.video.srcObject);
 }
 
 /**
  * Create canvases and objects for processing, and attach event listeners
  */
 Spellcast.prototype.loadProcessorAndListeners = function() {
-	alert("loading processor and listeners");
 	let processor = this.generateVideoProcessor();
 
 	// Bind processor to video playback and begin playback
