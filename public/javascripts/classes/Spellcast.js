@@ -87,11 +87,13 @@ Spellcast.prototype.boot = function() {
 		alert(promise);
 	} else {
 		// fallback for browsers
-		navigator.getUserMedia(
+		alert("navigator.mediaDevices does not exist");
+		let promise = navigator.getUserMedia(
 			this.mediaConstraints,
 			this.handleStream.bind(this), 
 			this.handleGetUserMediaError.bind(this)
 		);	
+		alert(promise);
 	}
 };
 
