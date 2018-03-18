@@ -80,10 +80,13 @@ Spellcast.prototype.boot = function() {
 
 	// TODO: add handling for making this work on all mobile browsers
 	if (navigator.mediaDevices) {
-		navigator.mediaDevices.getUserMedia(this.mediaConstraints)
+		alert("navigator.mediaDevices exists");
+		let promise = navigator.mediaDevices.getUserMedia(this.mediaConstraints)
 		.then(this.handleStream.bind(this)) 
 		.catch(this.handleGetUserMediaError.bind(this));
+		alert(promise);
 	} else {
+		// fallback for browsers
 		navigator.getUserMedia(
 			this.mediaConstraints,
 			this.handleStream.bind(this), 
@@ -109,19 +112,21 @@ Spellcast.prototype.handleGetUserMediaError = function(error) {
  * @param  {MediaStream} stream
  */
 Spellcast.prototype.handleStream = function(stream) {
-
-	// Make sure not audio tracks disabled
+	alert("hanlding stream");
+	// Make sure all audio tracks disabled
 	let audioTracks = stream.getAudioTracks();
 	audioTracks.forEach(track => track.enabled = false);
-
+	alert("setting video source");
 	this.video.srcObject = stream;
-	this.video.onloadedmetadata = this.loadProcessorsAndListeners.bind(this);
+	this.video.onloadedmetadata = this.loadProcessorAndListeners.bind(this);
+	alert("video source is " + this.video.srcObject);
 }
 
 /**
  * Create canvases and objects for processing, and attach event listeners
  */
-Spellcast.prototype.loadProcessorsAndListeners = function() {
+Spellcast.prototype.loadProcessorAndListeners = function() {
+	alert("loading processor and listeners");
 	let processor = this.generateVideoProcessor();
 
 	// Bind processor to video playback and begin playback
@@ -185,7 +190,7 @@ Spellcast.prototype.transcribeGlyph = function() {
 	Tesseract.recognize(this.glyph)
 	.then((result) => {
 
-		if (result.symbols[0]) {
+		if (result.symbols[0]) {a
 
 			// TODO: improve how we're parsing the text. We might not want the "first" symbol in the image...
 			let firstSymbol = result.symbols[0].text;
