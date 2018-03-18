@@ -186,7 +186,7 @@ Spellcast.prototype.transcribeGlyph = function() {
 	Tesseract.recognize(this.glyph)
 	.then((result) => {
 
-		if (result.symbols[0]) {a
+		if (result.symbols[0]) {
 
 			// TODO: improve how we're parsing the text. We might not want the "first" symbol in the image...
 			let firstSymbol = result.symbols[0].text;
