@@ -87,13 +87,13 @@ Spellcast.prototype.boot = function() {
 		// fallback for chrome on iOS
 		// TODO: add fallback behavior for google chrome on iOS?
 		alert("navigator.mediaDevices does not exist");
-		alert(navigator.getUserMedia)
+		alert("navigator.getUserMedia is " + navigator.getUserMedia);
 		let promise = navigator.getUserMedia(
 			this.mediaConstraints,
 			this.handleStream.bind(this), 
 			this.handleGetUserMediaError.bind(this)
 		);	
-		alert(promise);
+		alert("result is " + promise);
 	}
 };
 
