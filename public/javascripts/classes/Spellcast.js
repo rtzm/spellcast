@@ -84,10 +84,17 @@ Spellcast.prototype.boot = function() {
 		.then(this.handleStream.bind(this)) 
 		.catch(this.handleGetUserMediaError.bind(this));
 	} else {
-		// TODO: fix once we have better support in Chrome for iOS, or look into other 
-		// ways around. adapter.js doesn't handle this?
-		alert("Browser is " + adapter.browserDetails.browser + ". version is " + adapter.browserDetails.version);
-		this.displayBrowserIncompatibleErrorToPage();
+		// TODO: Why is chrome on my iPhone 5 unable to display? 
+		if (navigator.webkitGetUserMedia) {
+			// adapter.js sometimes reads chrome on iOS as safari, and can't shim
+			navigator.webkitGetUserMedia(
+				this.mediaConstraints,
+				this.handleStream.bind(this),
+				this.handleGetUserMediaError.bind(this)
+			);
+		} else {
+			this.displayBrowserIncompatibleErrorToPage();
+		}
 	}
 };
 
