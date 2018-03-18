@@ -84,18 +84,9 @@ Spellcast.prototype.boot = function() {
 		.then(this.handleStream.bind(this)) 
 		.catch(this.handleGetUserMediaError.bind(this));
 	} else {
-		// TODO: Why is chrome on my iPhone 5 unable to display? 
-		alert(navigator.webkitGetUserMedia);
-		if (navigator.webkitGetUserMedia) {
-			// adapter.js sometimes reads chrome on iOS as safari, and can't shim
-			navigator.webkitGetUserMedia(
-				this.mediaConstraints,
-				this.handleStream.bind(this),
-				this.handleGetUserMediaError.bind(this)
-			);
-		} else {
-			this.displayBrowserIncompatibleErrorToPage();
-		}
+		// TODO: Chrome is currently being read in as Safari in the adapter.js shim
+		// for WebRTC. See: https://github.com/webrtc/adapter/issues/764 
+		this.displayBrowserIncompatibleErrorToPage();
 	}
 };
 
