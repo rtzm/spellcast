@@ -84,16 +84,10 @@ Spellcast.prototype.boot = function() {
 		.then(this.handleStream.bind(this)) 
 		.catch(this.handleGetUserMediaError.bind(this));
 	} else {
-		// fallback for chrome on iOS
-		// TODO: add fallback behavior for google chrome on iOS?
-		alert("navigator.mediaDevices does not exist");
-		alert("navigator.getUserMedia is " + navigator.getUserMedia);
-		let promise = navigator.getUserMedia(
-			this.mediaConstraints,
-			this.handleStream.bind(this), 
-			this.handleGetUserMediaError.bind(this)
-		);	
-		alert("result is " + promise);
+		// TODO: fix once we have better support in Chrome for iOS, or look into other 
+		// ways around. adapter.js doesn't handle this?
+		alert(adapter);
+		this.displayBrowserIncompatibleErrorToPage();
 	}
 };
 
@@ -103,10 +97,13 @@ Spellcast.prototype.boot = function() {
  * @param  {Error} error
  */
 Spellcast.prototype.handleGetUserMediaError = function(error) {
-	alert("received error");
+	this.displayBrowserIncompatibleErrorToPage();
+	console.error(error);
+}
+
+Spellcast.prototype.displayBrowserIncompatibleErrorToPage = function() {
 	let warning = document.createTextNode("Unable to run with your browser/camera.");
 	this.textOutput.appendChild(warning);
-	console.error(error);
 }
 
 /**
