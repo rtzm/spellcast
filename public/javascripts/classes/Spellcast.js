@@ -86,7 +86,7 @@ Spellcast.prototype.boot = function() {
 	} else {
 		// TODO: fix once we have better support in Chrome for iOS, or look into other 
 		// ways around. adapter.js doesn't handle this?
-		alert(adapter);
+		alert("Browser is " + adapter.browserDetails.browser + ". version is " + adapter.browserDetails.version);
 		this.displayBrowserIncompatibleErrorToPage();
 	}
 };
