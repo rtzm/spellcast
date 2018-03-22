@@ -28,6 +28,20 @@ GlyphWriter.prototype.write = function(vector) {
 	this.currentPosition[0] = startWidth - deltaX;
 	this.currentPosition[1] = startHeight - deltaY;
 
+	// Prevent position from moving past frame
+	if (this.currentPosition[0] > this.totalWidth) {
+		this.currentPosition[0] = this.totalWidth;
+	}
+	if (this.currentPosition[0] < 0) {
+		this.currentPosition[0] = 0;
+	}
+	if (this.currentPosition[1] > this.totalHeight) {
+		this.currentPosition[1] = this.totalHeight;
+	}
+	if (this.currentPosition[1] < 0) {
+		this.currentPosition[1] = 0;
+	}
+
 	// Draw path
 	// TODO: replace drawing with offscreen canvas for optimization
 	// See https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
