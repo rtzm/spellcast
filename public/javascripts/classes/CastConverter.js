@@ -25,8 +25,9 @@ export default function CastConverter(analyzer, writer, reader) {
  * Converts the image into vectors and passes them to the writer
  * 
  * @param  {ImageData} imageData from input context for video
+ * @param  {Boolean} whether should be writing or just moving reticle
  */
-CastConverter.prototype.convertFrame = function(imageData) {
+CastConverter.prototype.convertFrame = function(imageData, recording) {
 	this.analyzer.parse(imageData);
-	this.writer.write(this.analyzer.getAverageVector());
+	this.writer.write(this.analyzer.getAverageVector(), recording);
 };

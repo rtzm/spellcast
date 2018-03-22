@@ -20,7 +20,12 @@ a {
 
 #controls {
 	margin: 25px auto;
-	width: 500px;
+	width: 480px;
+}
+
+#instructions {
+	margin: 25px auto;
+	width: 480px;
 }
 
 #video-control {
@@ -30,7 +35,10 @@ a {
 
 #glyph-container {
 	margin: 0 auto;
-    width: 500px;
+    width: 480px;
+    height: 320px;
+    position: relative;
+    border: solid 1px gray;
 }
 
 #about {
@@ -42,9 +50,7 @@ a {
 	margin: 13px auto;
 }
 
-#glyph {
-	border: solid gray 1px;
+#glyph, #reticle {
+	position: absolute;
 	margin: 0 auto;
-	width: 480px;
-	height: 320px;
 }

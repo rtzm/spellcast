@@ -17,6 +17,14 @@ export default function Processor(video, converter, width, height) {
 	 * ID for requestAnimationFrame
 	 */
 	this.requestId;
+
+	/**
+	 * Whether movements are currently being recorded on glyph or 
+	 * if reticle is simply moving.
+	 * 
+	 * @type {Boolean}
+	 */
+	this.recording = false;
 };
 
 /**
@@ -27,10 +35,15 @@ Processor.prototype.start = function() {
 	this.requestId = window.requestAnimationFrame(this.start.bind(this));
 	this.offscreenContext.drawImage(this.video, 0, 0, this.width, this.height);
 	let imageData = this.offscreenContext.getImageData(0, 0, this.width, this.height);
-	this.converter.convertFrame(imageData);
+	this.converter.convertFrame(imageData, this.recording);
 };
 
 Processor.prototype.stop = function() {
 	// TODO: canceling animation frame should maybe live in the purview of the Spellcast object
 	window.cancelAnimationFrame(this.requestId);
+}
+
+Processor.prototype.toggleRecording = function(event) {
+	this.recording = !this.recording;
+	event.preventDefault();
 }

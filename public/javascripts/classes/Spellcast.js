@@ -23,6 +23,11 @@ export default function Spellcast() {
 	 * be written to.
 	 */
 	this.glyph;
+	
+	/**
+	 * The canvas element that tracks where the tip of the drawing is
+	 */
+	this.reticle;
 
 	/**
 	 * Currently capturing video
@@ -49,8 +54,12 @@ export default function Spellcast() {
 	 * How much the video size should be reduced by
 	 * 
 	 * @type {Number}
+	 * @default 4
 	 */
 	this.downsampleRate = 4;
+
+	this.idealWidth = 120;
+	this.idealHeight = 90;
 
 	/**
 	 * Media constraints for the call to getUserMedia
@@ -58,8 +67,8 @@ export default function Spellcast() {
 	 */
 	this.mediaConstraints = { 
 		audio: false, 
-		video: { 
-			// TODO: make this exact when ready for mobile
+		video: {
+			// TODO: make this exact when ready for mobile-only
 			facingMode: "environment",
 			// TODO: add frame rate for better mobile processing
 			frameRate: {
@@ -76,6 +85,7 @@ export default function Spellcast() {
 Spellcast.prototype.boot = function() {
 	this.videoControl = document.getElementById('video-control');
 	this.glyph = document.getElementById('glyph');
+	this.reticle = document.getElementById('reticle');
 	this.textOutput = document.getElementById('text-output');
 
 	// TODO: add handling for making this work on all mobile browsers
@@ -84,8 +94,7 @@ Spellcast.prototype.boot = function() {
 		.then(this.handleStream.bind(this)) 
 		.catch(this.handleGetUserMediaError.bind(this));
 	} else {
-		// TODO: Chrome is currently being read in as Safari in the adapter.js shim
-		// for WebRTC. See: https://github.com/webrtc/adapter/issues/764 
+		// TODO: Chrome for iOS can't use this: http://www.openradar.me/33571214
 		this.displayBrowserIncompatibleErrorToPage();
 	}
 };
@@ -124,14 +133,35 @@ Spellcast.prototype.handleStream = function(stream) {
 Spellcast.prototype.loadProcessorAndListeners = function() {
 	let processor = this.generateVideoProcessor();
 
+	this.downsampleRate = this.updatedDownsampleRate();
+
 	// Bind processor to video playback and begin playback
 	this.video.addEventListener('playing', processor.start.bind(processor), false);
 	this.video.addEventListener('ended', processor.stop.bind(processor), false);
-	this.video.addEventListener('pause', processor.stop.bind(processor), false);
+	this.video.addEventListener('pause', processor.stop.bind(processor), false);	
 	this.videoControl.addEventListener('click', this.toggleControl.bind(this), false);
 
+	// Bind touch or mouse events in glyph canvas to drawing 
+	this.reticle.addEventListener('touchstart', processor.toggleRecording.bind(processor), false);
+	this.reticle.addEventListener('touchend', processor.toggleRecording.bind(processor), false);
+	this.reticle.addEventListener('click', processor.toggleRecording.bind(processor), false);
+	
 	// Bind transcription event when video pauses
 	this.video.addEventListener('pause', this.transcribeGlyph.bind(this), false);	
+};
+
+/**
+ * This would be preferable to set using WebRTC constraints, but those are 
+ * inconsistently applied across browsers, especially Safari iOS.
+ *
+ * @return {Float} The rate at which video should be downsampled to achieve ideal
+ */
+Spellcast.prototype.updatedDownsampleRate = function() {
+	let widthDownsample = this.video.videoWidth / this.idealWidth;
+	let heightDownsample = this.video.videoHeight / this.idealHeight;
+	return (widthDownsample > heightDownsample) ? 
+		heightDownsample : 
+		widthDownsample;
 };
 
 Spellcast.prototype.toggleControl = function() {
@@ -160,13 +190,13 @@ Spellcast.prototype.toggleControl = function() {
 Spellcast.prototype.generateVideoProcessor = function() {
 	let converter = new CastConverter(
 		new OptFlowAnalyzer().init(), 
-		new GlyphWriter(this.glyph)
+		new GlyphWriter(this.glyph, this.reticle)
 	);
 	return new Processor(
 		this.video, 
 		converter, 
-		Math.floor(this.video.videoWidth)/this.downsampleRate, 
-		Math.floor(this.video.videoHeight)/this.downsampleRate
+		Math.floor(this.video.videoWidth/this.downsampleRate), 
+		Math.floor(this.video.videoHeight/this.downsampleRate)
 	);
 }
 
@@ -187,15 +217,16 @@ Spellcast.prototype.transcribeGlyph = function() {
 
 		if (result.symbols[0]) {
 
-			// TODO: improve how we're parsing the text. We might not want the "first" symbol in the image...
-			let firstSymbol = result.symbols[0].text;
-			
+			// TODO: improve how we're parsing the text. We might want to provide all the symbols 
+			// in the image and allow the user to select the "right" one
+			// let symbols = result.symbols;
+
 			// Put it on the page
-			let text = document.createTextNode(firstSymbol);
+			let text = document.createTextNode(result.text.trim());
 			this.textOutput.appendChild(text);
-			this.videoControl.innerHTML = "Reload page";	
+			this.videoControl.innerHTML = "Reload page";
 		} else {
-			this.videoControl.innerHTML = "Can't parse symbol, try again";
+			this.videoControl.innerHTML = "Can't parse symbol or text, try again";
 		}
 		
 		this.transcribing = false;

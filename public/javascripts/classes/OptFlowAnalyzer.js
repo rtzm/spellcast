@@ -5,7 +5,7 @@ export default function OptFlowAnalyzer() {
 	 * 
 	 * @type {Number}
 	 */
-	this.max_iterations = 30;
+	this.max_iterations = 15;
 
 	/**
 	 * From jsfeat:
@@ -13,7 +13,7 @@ export default function OptFlowAnalyzer() {
 	 * 
 	 * @type {Number}
 	 */
-	this.win_size = 20;
+	this.win_size = 15;
 
 	/**
 	 * From jsfeat:
