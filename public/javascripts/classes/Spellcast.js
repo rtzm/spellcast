@@ -23,6 +23,11 @@ export default function Spellcast() {
 	 * be written to.
 	 */
 	this.glyph;
+	
+	/**
+	 * The canvas element that tracks where the tip of the drawing is
+	 */
+	this.reticle;
 
 	/**
 	 * Currently capturing video
@@ -80,6 +85,7 @@ export default function Spellcast() {
 Spellcast.prototype.boot = function() {
 	this.videoControl = document.getElementById('video-control');
 	this.glyph = document.getElementById('glyph');
+	this.reticle = document.getElementById('reticle');
 	this.textOutput = document.getElementById('text-output');
 
 	// TODO: add handling for making this work on all mobile browsers
@@ -132,9 +138,14 @@ Spellcast.prototype.loadProcessorAndListeners = function() {
 	// Bind processor to video playback and begin playback
 	this.video.addEventListener('playing', processor.start.bind(processor), false);
 	this.video.addEventListener('ended', processor.stop.bind(processor), false);
-	this.video.addEventListener('pause', processor.stop.bind(processor), false);
+	this.video.addEventListener('pause', processor.stop.bind(processor), false);	
 	this.videoControl.addEventListener('click', this.toggleControl.bind(this), false);
 
+	// Bind touch or mouse events in glyph canvas to drawing 
+	this.reticle.addEventListener('touchstart', processor.toggleRecording.bind(processor), false);
+	this.reticle.addEventListener('touchend', processor.toggleRecording.bind(processor), false);
+	this.reticle.addEventListener('click', processor.toggleRecording.bind(processor), false);
+	
 	// Bind transcription event when video pauses
 	this.video.addEventListener('pause', this.transcribeGlyph.bind(this), false);	
 };
@@ -179,7 +190,7 @@ Spellcast.prototype.toggleControl = function() {
 Spellcast.prototype.generateVideoProcessor = function() {
 	let converter = new CastConverter(
 		new OptFlowAnalyzer().init(), 
-		new GlyphWriter(this.glyph)
+		new GlyphWriter(this.glyph, this.reticle)
 	);
 	return new Processor(
 		this.video, 
