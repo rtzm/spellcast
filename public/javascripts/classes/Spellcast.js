@@ -217,15 +217,16 @@ Spellcast.prototype.transcribeGlyph = function() {
 
 		if (result.symbols[0]) {
 
-			// TODO: improve how we're parsing the text. We might not want the "first" symbol in the image...
-			let firstSymbol = result.symbols[0].text;
-			
+			// TODO: improve how we're parsing the text. We might want to provide all the symbols 
+			// in the image and allow the user to select the "right" one
+			// let symbols = result.symbols;
+
 			// Put it on the page
-			let text = document.createTextNode(firstSymbol);
+			let text = document.createTextNode(result.text.trim());
 			this.textOutput.appendChild(text);
-			this.videoControl.innerHTML = "Reload page";	
+			this.videoControl.innerHTML = "Reload page";
 		} else {
-			this.videoControl.innerHTML = "Can't parse symbol, try again";
+			this.videoControl.innerHTML = "Can't parse symbol or text, try again";
 		}
 		
 		this.transcribing = false;

@@ -23,6 +23,11 @@ a {
 	width: 480px;
 }
 
+#instructions {
+	margin: 25px auto;
+	width: 480px;
+}
+
 #video-control {
 	width: 480px;
 	height: 80px;
