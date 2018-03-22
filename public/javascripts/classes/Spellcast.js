@@ -49,8 +49,12 @@ export default function Spellcast() {
 	 * How much the video size should be reduced by
 	 * 
 	 * @type {Number}
+	 * @default 4
 	 */
 	this.downsampleRate = 4;
+
+	this.idealWidth = 120;
+	this.idealHeight = 90;
 
 	/**
 	 * Media constraints for the call to getUserMedia
@@ -58,8 +62,8 @@ export default function Spellcast() {
 	 */
 	this.mediaConstraints = { 
 		audio: false, 
-		video: { 
-			// TODO: make this exact when ready for mobile
+		video: {
+			// TODO: make this exact when ready for mobile-only
 			facingMode: "environment",
 			// TODO: add frame rate for better mobile processing
 			frameRate: {
@@ -84,8 +88,7 @@ Spellcast.prototype.boot = function() {
 		.then(this.handleStream.bind(this)) 
 		.catch(this.handleGetUserMediaError.bind(this));
 	} else {
-		// TODO: Chrome is currently being read in as Safari in the adapter.js shim
-		// for WebRTC. See: https://github.com/webrtc/adapter/issues/764 
+		// TODO: Chrome for iOS can't use this: http://www.openradar.me/33571214
 		this.displayBrowserIncompatibleErrorToPage();
 	}
 };
@@ -124,6 +127,8 @@ Spellcast.prototype.handleStream = function(stream) {
 Spellcast.prototype.loadProcessorAndListeners = function() {
 	let processor = this.generateVideoProcessor();
 
+	this.downsampleRate = this.updatedDownsampleRate();
+
 	// Bind processor to video playback and begin playback
 	this.video.addEventListener('playing', processor.start.bind(processor), false);
 	this.video.addEventListener('ended', processor.stop.bind(processor), false);
@@ -132,6 +137,20 @@ Spellcast.prototype.loadProcessorAndListeners = function() {
 
 	// Bind transcription event when video pauses
 	this.video.addEventListener('pause', this.transcribeGlyph.bind(this), false);	
+};
+
+/**
+ * This would be preferable to set using WebRTC constraints, but those are 
+ * inconsistently applied across browsers, especially Safari iOS.
+ *
+ * @return {Float} The rate at which video should be downsampled to achieve ideal
+ */
+Spellcast.prototype.updatedDownsampleRate = function() {
+	let widthDownsample = this.video.videoWidth / this.idealWidth;
+	let heightDownsample = this.video.videoHeight / this.idealHeight;
+	return (widthDownsample > heightDownsample) ? 
+		heightDownsample : 
+		widthDownsample;
 };
 
 Spellcast.prototype.toggleControl = function() {
@@ -165,8 +184,8 @@ Spellcast.prototype.generateVideoProcessor = function() {
 	return new Processor(
 		this.video, 
 		converter, 
-		Math.floor(this.video.videoWidth)/this.downsampleRate, 
-		Math.floor(this.video.videoHeight)/this.downsampleRate
+		Math.floor(this.video.videoWidth/this.downsampleRate), 
+		Math.floor(this.video.videoHeight/this.downsampleRate)
 	);
 }
 
