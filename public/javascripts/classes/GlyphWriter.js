@@ -3,20 +3,19 @@
  * 
  * @param {canvas} outputCanvas
  */
-export default function GlyphWriter(outputCanvas, reticleImg, drawingImgPath, notDrawingImgPath) {
+export default function GlyphWriter(outputCanvas, reticleContainer, drawingImg, notDrawingImg) {
 	this.outputCanvas = outputCanvas;
 	this.outputContext = outputCanvas.getContext('2d', { alpha: "false" });
 	this.outputContext.strokeStyle = "red";
-	this.reticleImg = reticleImg;
+	this.reticleContainer = reticleContainer;
 	this.totalWidth = outputCanvas.width;
 	this.totalHeight = outputCanvas.height;
-	this.drawingImgPath = drawingImgPath;
-	this.notDrawingImgPath = notDrawingImgPath;
+	this.drawingImg = drawingImg;
+	this.notDrawingImg = notDrawingImg;
 	this.currentPosition = [ 
 		Math.floor(outputCanvas.width/2), 
 		Math.floor(outputCanvas.height/2)
 	];
-	this.useRecordingReticle = false;
 };
 
 /**
@@ -67,13 +66,19 @@ GlyphWriter.prototype.write = function(vector, recording) {
  * @param  {Boolean} recording Whether currently recording writing as a line drawing
  */
 GlyphWriter.prototype.moveRecticle = function(recording) {
-	let changeReticle = false;
-	if (this.useRecordingReticle !== recording) {
-		this.useRecordingReticle = recording;
-		this.reticleImg.src = recording ? this.drawingImgPath : this.notDrawingImgPath;
-	}
 	// TODO: this is kludgey. Make the reticle image into a value object and abstract 
 	// this into there
-	this.reticleImg.style.left = `${this.currentPosition[0] - 7}px`;
-	this.reticleImg.style.top = `${this.currentPosition[1] - 7}px`;
+	let currentReticleLeft = `${this.currentPosition[0] - 7}px`;
+	let currentReticleTop = `${this.currentPosition[1] - 7}px`;
+	let offscreen = "-15px";
+
+	this.drawingImg.style.position = "absolute";
+	this.drawingImg.style.left = currentReticleLeft;
+	this.drawingImg.style.top = currentReticleTop;
+	this.drawingImg.hidden = !recording;
+	
+	this.notDrawingImg.style.position = "absolute";
+	this.notDrawingImg.style.left = currentReticleLeft;
+	this.notDrawingImg.style.top = currentReticleTop;
+	this.notDrawingImg.hidden = recording;
 }

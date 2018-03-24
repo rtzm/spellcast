@@ -27,7 +27,7 @@ export default function Spellcast() {
 	/**
 	 * The div element that holds the reticle for drawing
 	 */
-	this.reticleImg;
+	this.reticleContainer;
 
 	/**
 	 * Currently capturing video
@@ -82,7 +82,6 @@ export default function Spellcast() {
 Spellcast.prototype.boot = function() {
 	this.videoControl = document.getElementById('video-control');
 	this.glyph = document.getElementById('glyph');
-	this.reticleImg = document.getElementById('reticle');
 	this.reticleContainer = document.getElementById('reticle-container');
 	this.textOutput = document.getElementById('text-output');
 
@@ -186,13 +185,24 @@ Spellcast.prototype.toggleControl = function() {
  * @return {Processor}
  */
 Spellcast.prototype.generateVideoProcessor = function() {
+	let drawingImg = document.createElement('img');
+	drawingImg.src = 'images/drawing.png';
+	drawingImg.hidden = true;
+
+	let notDrawingImg = document.createElement('img');
+	notDrawingImg.src = 'images/notDrawing.png';
+	notDrawingImg.hidden = true;
+	
+	this.reticleContainer.appendChild(drawingImg);
+	this.reticleContainer.appendChild(notDrawingImg);
+
 	let converter = new CastConverter(
 		new OptFlowAnalyzer().init(), 
 		new GlyphWriter(
 			this.glyph, 
-			this.reticleImg,
-			'images/drawing.png',
-			'images/notDrawing.png'
+			this.reticleContainer,
+			drawingImg,
+			notDrawingImg
 		)
 	);
 	return new Processor(
