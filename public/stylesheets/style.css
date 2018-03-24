@@ -42,7 +42,7 @@ a {
 }
 
 #about {
-	width: 500px;
+	width: 480px;
     margin: 0 auto;
 }
 
@@ -50,7 +50,16 @@ a {
 	margin: 13px auto;
 }
 
-#glyph, #reticle {
+#glyph, #reticle-container {
 	position: absolute;
 	margin: 0 auto;
+}
+
+#reticle-container {
+	width: 480px;
+	height: 320px;
+}
+
+#reticle {
+	position: absolute;
 }

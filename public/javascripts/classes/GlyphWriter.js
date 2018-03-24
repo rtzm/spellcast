@@ -3,19 +3,20 @@
  * 
  * @param {canvas} outputCanvas
  */
-export default function GlyphWriter(outputCanvas, reticleCanvas) {
+export default function GlyphWriter(outputCanvas, reticleImg, drawingImgPath, notDrawingImgPath) {
 	this.outputCanvas = outputCanvas;
 	this.outputContext = outputCanvas.getContext('2d', { alpha: "false" });
 	this.outputContext.strokeStyle = "red";
-	this.reticleCanvas = reticleCanvas;
-	this.reticleContext = reticleCanvas.getContext('2d', { alpha: "false" });
-	this.reticleContext.strokeStyle = "black";
+	this.reticleImg = reticleImg;
 	this.totalWidth = outputCanvas.width;
 	this.totalHeight = outputCanvas.height;
+	this.drawingImgPath = drawingImgPath;
+	this.notDrawingImgPath = notDrawingImgPath;
 	this.currentPosition = [ 
-		Math.round(outputCanvas.width/2), 
-		Math.round(outputCanvas.height/2)
+		Math.floor(outputCanvas.width/2), 
+		Math.floor(outputCanvas.height/2)
 	];
+	this.useRecordingReticle = false;
 };
 
 /**
@@ -57,31 +58,22 @@ GlyphWriter.prototype.write = function(vector, recording) {
 		this.outputContext.stroke();		
 	}
 
-	this.drawReticle(recording);
+	this.moveRecticle(recording);
 };
 
 /**
  * Draw the reticle on the reticle canvas
  * 
- * @param  {Boolean} recording Whether to draw recording reticle or rest reticle
+ * @param  {Boolean} recording Whether currently recording writing as a line drawing
  */
-GlyphWriter.prototype.drawReticle = function(recording) {
-	this.reticleContext.clearRect(0, 0, this.totalWidth, this.totalHeight)
-	this.reticleContext.beginPath();
-
-	if (recording) {
-		// Draw a circle around the point
-		this.reticleContext.arc(this.currentPosition[0], this.currentPosition[1], 5, 0, 2 * Math.PI);
-
-	} else {
-		// Draw a horizontal line
-		this.reticleContext.moveTo(this.currentPosition[0]-5, this.currentPosition[1]);
-		this.reticleContext.lineTo(this.currentPosition[0]+5, this.currentPosition[1]);
-
-		// And a vertical line
-		this.reticleContext.moveTo(this.currentPosition[0], this.currentPosition[1]-5);
-		this.reticleContext.lineTo(this.currentPosition[0], this.currentPosition[1]+5);
+GlyphWriter.prototype.moveRecticle = function(recording) {
+	let changeReticle = false;
+	if (this.useRecordingReticle !== recording) {
+		this.useRecordingReticle = recording;
+		this.reticleImg.src = recording ? this.drawingImgPath : this.notDrawingImgPath;
 	}
-
-	this.reticleContext.stroke();
+	// TODO: this is kludgey. Make the reticle image into a value object and abstract 
+	// this into there
+	this.reticleImg.style.left = `${this.currentPosition[0] - 7}px`;
+	this.reticleImg.style.top = `${this.currentPosition[1] - 7}px`;
 }

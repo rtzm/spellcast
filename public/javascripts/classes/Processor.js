@@ -45,5 +45,6 @@ Processor.prototype.stop = function() {
 
 Processor.prototype.toggleRecording = function(event) {
 	this.recording = !this.recording;
+	
 	event.preventDefault();
 }
