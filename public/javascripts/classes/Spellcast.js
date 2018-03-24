@@ -185,14 +185,16 @@ Spellcast.prototype.toggleControl = function() {
  * @return {Processor}
  */
 Spellcast.prototype.generateVideoProcessor = function() {
+
+	// TODO: replace path without public directory once serving this through Express
 	let drawingImg = document.createElement('img');
-	drawingImg.src = 'images/drawing.png';
+	drawingImg.src = 'public/images/drawing.png';
 	drawingImg.hidden = true;
 
 	let notDrawingImg = document.createElement('img');
-	notDrawingImg.src = 'images/notDrawing.png';
+	notDrawingImg.src = 'public/images/notDrawing.png';
 	notDrawingImg.hidden = true;
-	
+
 	this.reticleContainer.appendChild(drawingImg);
 	this.reticleContainer.appendChild(notDrawingImg);
 
