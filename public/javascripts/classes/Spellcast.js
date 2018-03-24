@@ -71,10 +71,7 @@ export default function Spellcast() {
 			// TODO: make this exact when ready for mobile-only
 			facingMode: "environment",
 			// TODO: add frame rate for better mobile processing
-			frameRate: {
-				ideal: 10,
-				max: 15
-			}
+			frameRate: 24
 		}
 	};
 };
