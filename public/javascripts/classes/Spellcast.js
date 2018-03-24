@@ -25,9 +25,9 @@ export default function Spellcast() {
 	this.glyph;
 	
 	/**
-	 * The canvas element that tracks where the tip of the drawing is
+	 * The div element that holds the reticle for drawing
 	 */
-	this.reticle;
+	this.reticleContainer;
 
 	/**
 	 * Currently capturing video
@@ -71,10 +71,7 @@ export default function Spellcast() {
 			// TODO: make this exact when ready for mobile-only
 			facingMode: "environment",
 			// TODO: add frame rate for better mobile processing
-			frameRate: {
-				ideal: 10,
-				max: 15
-			}
+			frameRate: 24
 		}
 	};
 };
@@ -85,7 +82,7 @@ export default function Spellcast() {
 Spellcast.prototype.boot = function() {
 	this.videoControl = document.getElementById('video-control');
 	this.glyph = document.getElementById('glyph');
-	this.reticle = document.getElementById('reticle');
+	this.reticleContainer = document.getElementById('reticle-container');
 	this.textOutput = document.getElementById('text-output');
 
 	// TODO: add handling for making this work on all mobile browsers
@@ -142,9 +139,9 @@ Spellcast.prototype.loadProcessorAndListeners = function() {
 	this.videoControl.addEventListener('click', this.toggleControl.bind(this), false);
 
 	// Bind touch or mouse events in glyph canvas to drawing 
-	this.reticle.addEventListener('touchstart', processor.toggleRecording.bind(processor), false);
-	this.reticle.addEventListener('touchend', processor.toggleRecording.bind(processor), false);
-	this.reticle.addEventListener('click', processor.toggleRecording.bind(processor), false);
+	this.reticleContainer.addEventListener('touchstart', processor.toggleRecording.bind(processor), false);
+	this.reticleContainer.addEventListener('touchend', processor.toggleRecording.bind(processor), false);
+	this.reticleContainer.addEventListener('click', processor.toggleRecording.bind(processor), false);
 	
 	// Bind transcription event when video pauses
 	this.video.addEventListener('pause', this.transcribeGlyph.bind(this), false);	
@@ -188,9 +185,25 @@ Spellcast.prototype.toggleControl = function() {
  * @return {Processor}
  */
 Spellcast.prototype.generateVideoProcessor = function() {
+	let drawingImg = document.createElement('img');
+	drawingImg.src = 'images/drawing.png';
+	drawingImg.hidden = true;
+
+	let notDrawingImg = document.createElement('img');
+	notDrawingImg.src = 'images/notDrawing.png';
+	notDrawingImg.hidden = true;
+	
+	this.reticleContainer.appendChild(drawingImg);
+	this.reticleContainer.appendChild(notDrawingImg);
+
 	let converter = new CastConverter(
 		new OptFlowAnalyzer().init(), 
-		new GlyphWriter(this.glyph, this.reticle)
+		new GlyphWriter(
+			this.glyph, 
+			this.reticleContainer,
+			drawingImg,
+			notDrawingImg
+		)
 	);
 	return new Processor(
 		this.video, 

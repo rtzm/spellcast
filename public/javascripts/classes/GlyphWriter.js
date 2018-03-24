@@ -3,18 +3,18 @@
  * 
  * @param {canvas} outputCanvas
  */
-export default function GlyphWriter(outputCanvas, reticleCanvas) {
+export default function GlyphWriter(outputCanvas, reticleContainer, drawingImg, notDrawingImg) {
 	this.outputCanvas = outputCanvas;
 	this.outputContext = outputCanvas.getContext('2d', { alpha: "false" });
 	this.outputContext.strokeStyle = "red";
-	this.reticleCanvas = reticleCanvas;
-	this.reticleContext = reticleCanvas.getContext('2d', { alpha: "false" });
-	this.reticleContext.strokeStyle = "black";
+	this.reticleContainer = reticleContainer;
 	this.totalWidth = outputCanvas.width;
 	this.totalHeight = outputCanvas.height;
+	this.drawingImg = drawingImg;
+	this.notDrawingImg = notDrawingImg;
 	this.currentPosition = [ 
-		Math.round(outputCanvas.width/2), 
-		Math.round(outputCanvas.height/2)
+		Math.floor(outputCanvas.width/2), 
+		Math.floor(outputCanvas.height/2)
 	];
 };
 
@@ -57,31 +57,28 @@ GlyphWriter.prototype.write = function(vector, recording) {
 		this.outputContext.stroke();		
 	}
 
-	this.drawReticle(recording);
+	this.moveRecticle(recording);
 };
 
 /**
  * Draw the reticle on the reticle canvas
  * 
- * @param  {Boolean} recording Whether to draw recording reticle or rest reticle
+ * @param  {Boolean} recording Whether currently recording writing as a line drawing
  */
-GlyphWriter.prototype.drawReticle = function(recording) {
-	this.reticleContext.clearRect(0, 0, this.totalWidth, this.totalHeight)
-	this.reticleContext.beginPath();
+GlyphWriter.prototype.moveRecticle = function(recording) {
+	// TODO: this is kludgey. Make the reticle image into a value object and abstract 
+	// this into there
+	let currentReticleLeft = `${this.currentPosition[0] - 7}px`;
+	let currentReticleTop = `${this.currentPosition[1] - 7}px`;
+	let offscreen = "-15px";
 
-	if (recording) {
-		// Draw a circle around the point
-		this.reticleContext.arc(this.currentPosition[0], this.currentPosition[1], 5, 0, 2 * Math.PI);
-
-	} else {
-		// Draw a horizontal line
-		this.reticleContext.moveTo(this.currentPosition[0]-5, this.currentPosition[1]);
-		this.reticleContext.lineTo(this.currentPosition[0]+5, this.currentPosition[1]);
-
-		// And a vertical line
-		this.reticleContext.moveTo(this.currentPosition[0], this.currentPosition[1]-5);
-		this.reticleContext.lineTo(this.currentPosition[0], this.currentPosition[1]+5);
-	}
-
-	this.reticleContext.stroke();
+	this.drawingImg.style.position = "absolute";
+	this.drawingImg.style.left = currentReticleLeft;
+	this.drawingImg.style.top = currentReticleTop;
+	this.drawingImg.hidden = !recording;
+	
+	this.notDrawingImg.style.position = "absolute";
+	this.notDrawingImg.style.left = currentReticleLeft;
+	this.notDrawingImg.style.top = currentReticleTop;
+	this.notDrawingImg.hidden = recording;
 }

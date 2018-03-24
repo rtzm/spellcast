@@ -5,7 +5,7 @@
  * @param {OptFlowAnalyzer}						analyzer
  * @param {GlyphWriter}								writer
  */
-export default function CastConverter(analyzer, writer, reader) {
+export default function CastConverter(analyzer, writer) {
 	/**
 	 * Optical flow analyzer that will provide composite data for 
 	 * the video
