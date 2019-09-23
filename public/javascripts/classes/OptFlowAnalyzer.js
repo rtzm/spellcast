@@ -1,5 +1,3 @@
-import jsfeat from '../vendor/jsfeat-min.js';
-
 export default function OptFlowAnalyzer() {
 	/**
 	 * From jsfeat:
