@@ -7,7 +7,7 @@ describe('OptFlowAnalyzer', function() {
   describe('#init()', function() {
   	it('should set default value for point count', function() {
       let analyzer = new OptFlowAnalyzer().init();
-      chai.assert.equal(analyzer.point_count, 1);      
+      chai.assert.equal(analyzer.point_count, 0);      
   	});
   });
 
