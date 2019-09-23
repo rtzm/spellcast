@@ -1,6 +1,6 @@
 {
   "name": "spellcast",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Computer vision app to turn cellphone camera video into handwriting, and your phone into a wand Edit",
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
@@ -36,7 +36,7 @@
     "url": "https://github.com/rtzm/spellcast/issues"
   },
   "homepage": "https://github.com/rtzm/spellcast#readme",
-  "main": "app.js",
+  "main": "index.html",
   "directories": {
     "test": "test"
   }
