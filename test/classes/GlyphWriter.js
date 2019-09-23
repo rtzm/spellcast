@@ -1,5 +1,5 @@
 import chai from 'chai';
-import GlyphWriter from '../../../public/javascripts/classes/GlyphWriter';
+import GlyphWriter from '../../public/javascripts/classes/GlyphWriter';
 
 describe('GlyphWriter', function() {
 	describe('constructor', function() {
