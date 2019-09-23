@@ -1,5 +1,5 @@
 import chai from 'chai';
-import GlyphWriter from '../../../public/javascripts/classes/GlyphWriter';
+import GlyphWriter from '../../public/javascripts/classes/GlyphWriter';
 
 describe('GlyphWriter', function() {
 	describe('constructor', function() {
@@ -8,7 +8,10 @@ describe('GlyphWriter', function() {
 			let glyphHeight = 96;
 			let mockGlyph = {
 				width: glyphWidth,
-				height: glyphHeight
+				height: glyphHeight,
+				getContext: function() {
+					return {};
+				}
 			};
 			let writer = new GlyphWriter(mockGlyph);
 

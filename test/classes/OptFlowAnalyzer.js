@@ -1,13 +1,13 @@
 import chai from 'chai';
-import OptFlowAnalyzer from '../../../public/javascripts/classes/OptFlowAnalyzer';
-import MockImageData from '../../testData/MockImageData';
-import {uint1String, uint2String} from '../../testData/uints';
+import OptFlowAnalyzer from '../../public/javascripts/classes/OptFlowAnalyzer';
+import MockImageData from '../testData/MockImageData';
+import {uint1String, uint2String} from '../testData/uints';
 
 describe('OptFlowAnalyzer', function() {
   describe('#init()', function() {
   	it('should set default value for point count', function() {
       let analyzer = new OptFlowAnalyzer().init();
-      chai.assert.equal(analyzer.point_count, 1);      
+      chai.assert.equal(analyzer.point_count, 0);      
   	});
   });
 
