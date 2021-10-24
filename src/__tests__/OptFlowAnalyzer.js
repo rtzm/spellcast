@@ -1,7 +1,7 @@
 import chai from 'chai';
-import OptFlowAnalyzer from '../../../public/javascripts/classes/OptFlowAnalyzer';
-import MockImageData from '../../testData/MockImageData';
-import {uint1String, uint2String} from '../../testData/uints';
+import OptFlowAnalyzer from '../OptFlowAnalyzer';
+import MockImageData from './__mocks__/MockImageData';
+import {uint1String, uint2String} from './__mocks__/uints';
 
 describe('OptFlowAnalyzer', function() {
   describe('#init()', function() {
