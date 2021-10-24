@@ -57,3 +57,5 @@ typings/
 # dotenv environment variables file
 .env
 
+# Web Assembly targets
+wasm/draw-from-video/target

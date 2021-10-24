@@ -10,18 +10,23 @@
     "express": "^4.15.5",
     "hbs": "~4.0.1",
     "morgan": "~1.9.0",
-    "serve-favicon": "~2.4.5"
+    "serve-favicon": "~2.4.5",
+    "draw-from-video": "^0.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "mocha": "^3.4.2"
+    "mocha": "^3.4.2",
+    "webpack": "^4.25.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
   },
   "scripts": {
-    "test": "mocha --require babel-polyfill --require babel-register"
-  },
-  "scripts": {
-    "start": "node ./bin/www"
+    "serve": "webpack-dev-server",
+    "test": "mocha --require babel-polyfill --require babel-register",
+    "build:wasm": "wasm-pack build --out-dir ../../dist/draw-from-video --target web ./wasm/draw-from-video",
+    "bundle:wasm": "wasm-pack build --target bundler ./wasm/draw-from-video",
+    "link:wasm": "npm link ./wasm/draw-from-video/pkg"
   },
   "repository": {
     "type": "git",
