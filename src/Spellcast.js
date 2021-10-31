@@ -2,9 +2,16 @@ import CastConverter from './CastConverter';
 import OptFlowAnalyzer from './OptFlowAnalyzer';
 import GlyphWriter from './GlyphWriter';
 import Processor from './Processor';
-import { convertVideoToImageDataSlices } from './utils/convertVideoToImageDataSlice';
 import { useConvertImageToData } from './utils/use-convert-image-to-data';
 
+/**
+ * TODO: turn this from a class into a functional approach:
+ * - remove the usage of CastConverter, Processor, and OptFlowAnalyzer
+ * - remove unused functions from this class
+ * - convert GlyphWriter into a functional interface
+ * - Possibly put this within a create-react-app to generate UI in a modern way
+ * @param {() => Int16Array} drawFromVideo 
+ */
 export default function Spellcast(drawFromVideo) {
 	/**
 	 * The video element that will be sourced with getUserMedia's MediaStream.
@@ -165,12 +172,20 @@ const downsampleRateFromVideo = function(video, maxWidth, maxHeight) {
 let requestId;
 let img1;
 let img2;
+
+/**
+ * TODO: extract into a separate util
+ * @param {*} video 
+ * @param {*} downsampleRate 
+ * @param {*} drawFromVideo 
+ * @param {*} writer 
+ * @returns 
+ */
 const drawFromImages = (video, downsampleRate, drawFromVideo, writer) => {
 	const width = Math.floor(video.videoWidth/downsampleRate);
 	const height = Math.floor(video.videoHeight/downsampleRate);
-	// TODO: calculate this by downsampling?
+
 	const convertImageToData = useConvertImageToData(width, height);
-	// video.addEventListener('playing', convertVideoToImageDataSlices, false);
 
 	requestId = window.requestAnimationFrame(() => drawFromImages(video, downsampleRate, drawFromVideo, writer));
 
@@ -180,14 +195,12 @@ const drawFromImages = (video, downsampleRate, drawFromVideo, writer) => {
 	}
 	
 	img2 = convertImageToData(video);
-	// TODO: move resizing into rust code
-	const value = drawFromVideo.draw(img1, img2);
-	console.log("within js", value);
-	writer.write(value, false);
+	writer.write(drawFromVideo.draw(img1, img2), false);
 	img1 = img2;
 };
 
 /**
+ * TODO: remove
  * Create canvases and objects for processing, and attach event listeners
  */
 Spellcast.prototype.loadProcessorAndListeners = function() {
