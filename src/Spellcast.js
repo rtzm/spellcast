@@ -1,9 +1,11 @@
-import CastConverter from './CastConverter.js';
-import OptFlowAnalyzer from './OptFlowAnalyzer.js';
-import GlyphWriter from './GlyphWriter.js';
-import Processor from './Processor.js';
+import CastConverter from './CastConverter';
+import OptFlowAnalyzer from './OptFlowAnalyzer';
+import GlyphWriter from './GlyphWriter';
+import Processor from './Processor';
+import { convertVideoToImageDataSlices } from './utils/convertVideoToImageDataSlice';
+import { useConvertImageToData } from './utils/use-convert-image-to-data';
 
-export default function Spellcast() {
+export default function Spellcast(drawFromVideo) {
 	/**
 	 * The video element that will be sourced with getUserMedia's MediaStream.
 	 * Set playsinline to true so that iOS doesn't make it go full screen on play.
@@ -12,6 +14,11 @@ export default function Spellcast() {
 	this.video = document.createElement('video');
 	this.video.setAttribute("playsinline", true);
 	this.video.setAttribute("muted", true);
+	
+	/**
+	 * Injected processor to convert video to drawing vectors
+	 */
+	this.drawFromVideo = drawFromVideo;
 
 	/**
 	 * The text output div element that will hold the final OCR'ed symbol
@@ -28,6 +35,12 @@ export default function Spellcast() {
 	 * The canvas element that tracks where the tip of the drawing is
 	 */
 	this.reticle;
+
+	/**
+	 * Writer that handles output to a line-drawn image
+	 * @type {GlyphWriter}
+	 */
+	this.writer;
 
 	/**
 	 * Currently capturing video
@@ -58,8 +71,8 @@ export default function Spellcast() {
 	 */
 	this.downsampleRate = 4;
 
-	this.idealWidth = 120;
-	this.idealHeight = 90;
+	this.maxWidth = 64;
+	this.maxHeight = 64;
 
 	/**
 	 * Media constraints for the call to getUserMedia
@@ -83,16 +96,19 @@ export default function Spellcast() {
  * Initialize the app when document has loaded
  */
 Spellcast.prototype.boot = function() {
+
 	this.videoControl = document.getElementById('video-control');
 	this.glyph = document.getElementById('glyph');
 	this.reticle = document.getElementById('reticle');
 	this.textOutput = document.getElementById('text-output');
 
+	this.writer = new GlyphWriter(this.glyph, this.reticle)
+
 	// TODO: add handling for making this work on all mobile browsers
 	if (navigator.mediaDevices) {
 		navigator.mediaDevices.getUserMedia(this.mediaConstraints)
-		.then(this.handleStream.bind(this)) 
-		.catch(this.handleGetUserMediaError.bind(this));
+		  .then(this.handleStream.bind(this)) 
+		  .catch(this.handleGetUserMediaError.bind(this));
 	} else {
 		// TODO: Chrome for iOS can't use this: http://www.openradar.me/33571214
 		this.displayBrowserIncompatibleErrorToPage();
@@ -124,8 +140,52 @@ Spellcast.prototype.handleStream = function(stream) {
 	let audioTracks = stream.getAudioTracks();
 	audioTracks.forEach(track => track.enabled = false);
 	this.video.srcObject = stream;
-	this.video.onloadedmetadata = this.loadProcessorAndListeners.bind(this);
+	// JS processing code
+	// this.video.onloadedmetadata = this.loadProcessorAndListeners.bind(this);
+	// WASM processing code
+	this.video.onloadedmetadata = () => (
+
+		this.video.play() && 
+		drawFromImages(
+			this.video,
+			downsampleRateFromVideo(this.video, this.maxWidth, this.maxHeight),
+			this.drawFromVideo,
+			this.writer
+		)
+	);
 }
+const downsampleRateFromVideo = function(video, maxWidth, maxHeight) {
+	const widthDownsample = video.videoWidth / maxWidth;
+	const heightDownsample = video.videoHeight / maxHeight;
+	return (widthDownsample > heightDownsample) ? 
+		heightDownsample : 
+		widthDownsample;
+};
+
+let requestId;
+let img1;
+let img2;
+const drawFromImages = (video, downsampleRate, drawFromVideo, writer) => {
+	const width = Math.floor(video.videoWidth/downsampleRate);
+	const height = Math.floor(video.videoHeight/downsampleRate);
+	// TODO: calculate this by downsampling?
+	const convertImageToData = useConvertImageToData(width, height);
+	// video.addEventListener('playing', convertVideoToImageDataSlices, false);
+
+	requestId = window.requestAnimationFrame(() => drawFromImages(video, downsampleRate, drawFromVideo, writer));
+
+	if (!img1) {
+		img1 = convertImageToData(video);
+		return;
+	}
+	
+	img2 = convertImageToData(video);
+	// TODO: move resizing into rust code
+	const value = drawFromVideo.draw(img1, img2);
+	console.log("within js", value);
+	writer.write(value, false);
+	img1 = img2;
+};
 
 /**
  * Create canvases and objects for processing, and attach event listeners
@@ -157,8 +217,8 @@ Spellcast.prototype.loadProcessorAndListeners = function() {
  * @return {Float} The rate at which video should be downsampled to achieve ideal
  */
 Spellcast.prototype.updatedDownsampleRate = function() {
-	let widthDownsample = this.video.videoWidth / this.idealWidth;
-	let heightDownsample = this.video.videoHeight / this.idealHeight;
+	let widthDownsample = this.video.videoWidth / this.maxWidth;
+	let heightDownsample = this.video.videoHeight / this.maxHeight;
 	return (widthDownsample > heightDownsample) ? 
 		heightDownsample : 
 		widthDownsample;
@@ -234,7 +294,3 @@ Spellcast.prototype.transcribeGlyph = function() {
 	})
 	.catch(err => console.error(err));
 }
-
-let spellcast = new Spellcast();
-document.body.onload = spellcast.boot.bind(spellcast);
-

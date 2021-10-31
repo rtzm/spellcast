@@ -24,7 +24,6 @@
   "scripts": {
     "serve": "webpack-dev-server",
     "test": "mocha --require babel-polyfill --require babel-register",
-    "build:wasm": "wasm-pack build --out-dir ../../dist/draw-from-video --target web ./wasm/draw-from-video",
     "bundle:wasm": "wasm-pack build --target bundler ./wasm/draw-from-video",
     "link:wasm": "npm link ./wasm/draw-from-video/pkg"
   },
