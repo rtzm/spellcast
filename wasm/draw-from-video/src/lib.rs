@@ -5,6 +5,8 @@ use wasm_bindgen::prelude::*;
 use web_sys::console;
 use js_sys;
 use correlation_flow::micro_rfft;
+use image::io::Reader as ImageReader;
+use rustflow::coarse2fine_flow;
 
 #[wasm_bindgen]
 pub fn draw(img_array1: &[u8], img_array2: &[u8]) -> Result<js_sys::Int16Array, JsValue> {
@@ -25,6 +27,19 @@ pub fn draw(img_array1: &[u8], img_array2: &[u8]) -> Result<js_sys::Int16Array, 
     let img_array_crop1 = &img_array1[0..4095];
     let img_array_crop2 = &img_array2[0..4095];
 
+    // TODO: replace this with image from javascript
+    let img1 = match ImageReader::open(img1_path).unwrap().decode() {
+        Ok(img) => img,
+        Err(err) => Err(err),
+    };
+    let img2 = match ImageReader::open(img2_path).unwrap().decode() {
+        Ok(img) => img,
+        Err(err) => Err(err),
+    };
+
+    let flow = coarse2fine_flow(&img1, &img2, 0.012, 0.75, 20, 7, 1, 30);
+
+    Ok(get_average_flow_vector(flow));
     let mut correlator = micro_rfft::MicroFftContext::new();
     let mut last_flow = (0i16, 0i16);
     last_flow = correlator.measure_translation(&img_array_crop1, &img_array_crop2);
